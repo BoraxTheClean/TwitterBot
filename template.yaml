@@ -31,3 +31,11 @@ Resources:
                 Type: Schedule
                 Properties:
                   Schedule: rate(4 hours)
+
+    StateTable:
+      Type: AWS::Serverless::SimpleTable
+      Properties:
+        PrimaryKey:
+          Name: game-state
+          Type: String
+        TableName: Twitter-Bot-State-Table
