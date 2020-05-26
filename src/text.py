@@ -31,7 +31,6 @@ user = api.me()
 print('Tweeting for '+user.name)
 def handler(event, context):
     text = make_tweet()
-    clear_timeline()
     send_tweet(text)
 
 def make_tweet():
@@ -42,23 +41,3 @@ def send_tweet(text):
     print(text)
     api.update_status(text)
 
-
-#Deletes tweets older than a week.
-def clear_timeline():
-    now = datetime.datetime.now()
-    last_week = now - datetime.timedelta(days=1)
-    for i in range(20):
-        try:
-            tweets = api.user_timeline(page=i)
-        except Error as error:
-            print(error)
-        if len(tweets) == 0:
-            return
-        for tweet in tweets:
-            if tweet.created_at < last_week:
-                print("Deleting "+str(tweet.id))
-                destroy_status(tweet.id)
-
-
-def destroy_status(id):
-    api.destroy_status(id)
