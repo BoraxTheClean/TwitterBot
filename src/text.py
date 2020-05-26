@@ -34,7 +34,7 @@ def handler(event, context):
     send_tweet(text)
 
 def make_tweet():
-    return "I'm so glad I learned AWS Lambda and Python with @AWSOwen's free GumRoad course at store.owen.dev"
+    return "I'm so glad I learned AWS Lambda and Python with @AWSOwen's GumRoad course at store.owen.dev"
 
 
 def send_tweet(text):
