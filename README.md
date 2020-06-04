@@ -2,7 +2,6 @@
 
 ![architecture-diagram](https://raw.githubusercontent.com/BoraxTheClean/TwitterBot/master/TwitterBot.png)
 
-
 ## Setup
 
 Apply for a developer account at https://developer.twitter.com/
