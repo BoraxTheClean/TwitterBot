@@ -1,7 +1,5 @@
-import os
 import tweepy
 import boto3
-import datetime
 
 '''
     AWS Client Initialization
@@ -21,6 +19,7 @@ try:
 except Exception as error:
     print(error)
     print("Failed to fetch api keys.")
+    raise error
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 
@@ -34,10 +33,10 @@ def handler(event, context):
     send_tweet(text)
 
 def make_tweet():
-    return "I'm so glad I learned AWS Lambda and Python with @AWSOwen's GumRoad course at store.owen.dev"
+    return "#BlackLivesMatter https://blacklivesmatters.carrd.co/"
 
 
 def send_tweet(text):
     print(text)
-    api.update_status(text)
-
+    filename='BlackSquare.jpg'
+    api.update_with_media(filename,status=text)
