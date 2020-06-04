@@ -1,6 +1,7 @@
 # TwitterBot
 
 ![architecture-diagram](https://raw.githubusercontent.com/BoraxTheClean/TwitterBot/master/TwitterBot.png)
+![architecture-diagram](https://raw.githubusercontent.com/BoraxTheClean/TwitterBot/master/TwitterBotv2.png)
 
 ## Setup
 
