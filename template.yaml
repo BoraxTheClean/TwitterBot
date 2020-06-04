@@ -19,13 +19,11 @@ Resources:
             Handler: text.handler
             Runtime: python3.8
             Policies:
-              - AWSLambdaExecute
               - Version: '2012-10-17'
                 Statement:
                   - Effect: Allow
                     Action: ssm:GetParameter
                     Resource: '*'
-            ReservedConcurrentExecutions: 1
             Events:
               TweetEveryDay:
                 Type: Schedule

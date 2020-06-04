@@ -46,6 +46,43 @@ It is assumed that there are SSM parameters in your deployment region at `CONSUM
 
 ![SSM Console](https://raw.githubusercontent.com/BoraxTheClean/TwitterBot/master/SSM.png)
 
+## Lambda Configuration
+
+Our Lambda Function has a name, _twitter-bot_, a handler, the method `handler(event,context)` in the file `text.py`, and we want to use the latest python3.8 runtime.
+
+```yaml
+SimpleTwitterApp:
+    Type: AWS::Serverless::Function
+    Properties:
+        FunctionName: twitter-bot
+        CodeUri: dist/
+        Handler: text.handler
+        Runtime: python3.8
+```
+
+We give our Function basic SSM permisions, so it can fetch the parameters we configured for it.
+
+```yaml
+Policies:
+  - Version: '2012-10-17'
+    Statement:
+      - Effect: Allow
+        Action: ssm:GetParameter
+        Resource: '*'
+```
+
+Finally, we add an event to the function, sending out or tweet every 24 hours.
+
+If you want to send tweets more often, you'll have to make them dynamic, twitter blocks repeat tweets in a 24 hour period.
+
+```yaml
+Events:
+  TweetEveryDay:
+    Type: Schedule
+    Properties:
+      Schedule: rate(1 day)
+```
+
 ## Python Code
 
 We use the tweepy sdk to access the twitter api and boto3 API to access SSM Parameter Store.
