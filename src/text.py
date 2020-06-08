@@ -33,10 +33,9 @@ def handler(event, context):
     send_tweet(text)
 
 def make_tweet():
-    return "#BlackLivesMatter https://blacklivesmatters.carrd.co/"
+    return "I've completed my Quest!\n\nI built this Lambda Bot using @AWSOwen's course!"
 
 
 def send_tweet(text):
     print(text)
-    filename='BlackSquare.jpg'
-    api.update_with_media(filename,status=text)
+    api.update_status(text)

@@ -6,46 +6,78 @@
 
 Apply for a developer account at https://developer.twitter.com/
 
-Make an app and record your consumer key and secret.
+We need to get four secrets from Twitter to use their API:
+  - ACCESS_SECRET
+  - ACCESS_TOKEN
+  - CONSUMER_KEY
+  - CONSUMER_SECRET
 
-To get your access key and secret: https://github.com/tweepy/examples/blob/master/oauth/getaccesstoken.py
+After you make an app you can get your _CONSUMER_KEY_ and _CONSUMER_SECRET_ from the Twitter API console.
 
-Run this code locally, and authorize your bot account to use this app. Then the python script will print out your Access Key and Secret.
+Then you can generate your _ACCESS_SECRET_ and _ACCESS_TOKEN_ in the API console as well.
 
-```python
-import webbrowser
+![Generating Twitter Secrets](https://dev-to-uploads.s3.amazonaws.com/i/k0rs45pazkja17khaqns.png)
 
-import tweepy
-
-"""
-    Query the user for their consumer key/secret
-    then attempt to fetch a valid access token.
-"""
-
-if __name__ == "__main__":
-
-    consumer_key = raw_input('Consumer key: ').strip()
-    consumer_secret = raw_input('Consumer secret: ').strip()
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-
-    # Open authorization URL in browser
-    webbrowser.open(auth.get_authorization_url())
-
-    # Ask user for verifier pin
-    pin = raw_input('Verification pin number from twitter.com: ').strip()
-
-    # Get access token
-    token = auth.get_access_token(verifier=pin)
-
-    # Give user the access token
-    print 'Access token:'
-    print '  Key: %s' % token.key
-    print '  Secret: %s' % token.secret
-
-```
 ## Confirm SSM Parameters
 
 It is assumed that there are SSM parameters in your deployment region at `CONSUMER_SECRET` `CONSUMER_KEY` `ACCESS_TOKEN` `ACCESS_SECRET`. For help making SSM parameters: https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-paramstore-console.html
+
+![SSM Console](https://raw.githubusercontent.com/BoraxTheClean/TwitterBot/master/SSM.png)
+
+## Lambda Configuration
+
+Our Lambda Function has a name, _twitter-bot_, a handler, the method `handler(event,context)` in the file `text.py`, and we want to use the latest python3.8 runtime.
+
+```yaml
+SimpleTwitterApp:
+    Type: AWS::Serverless::Function
+    Properties:
+        FunctionName: twitter-bot
+        CodeUri: dist/
+        Handler: text.handler
+        Runtime: python3.8
+```
+
+We give our Function basic SSM permisions, so it can fetch the parameters we configured for it.
+
+```yaml
+Policies:
+  - Version: '2012-10-17'
+    Statement:
+      - Effect: Allow
+        Action: ssm:GetParameter
+        Resource: '*'
+```
+
+Finally, we add an event to the function, sending out or tweet every 24 hours.
+
+If you want to send tweets more often, you'll have to make them dynamic, twitter blocks repeat tweets in a 24 hour period.
+
+```yaml
+Events:
+  TweetEveryDay:
+    Type: Schedule
+    Properties:
+      Schedule: rate(1 day)
+```
+
+## Python Code
+
+We use the tweepy sdk to access the twitter api and boto3 API to access SSM Parameter Store.
+
+```python
+import tweepy
+import boto3
+
+'''
+    AWS Client Initialization
+'''
+
+ssm = boto3.client('ssm')
+```
+## Confirm SSM Parameters
+
+Next we pull parameters from SSM using the AWS API. I use the `WithDecryption` flag to decrypt the values, since I chose the `SecureString` option when creating my parameters.
 
 ![SSM Console](https://raw.githubusercontent.com/BoraxTheClean/TwitterBot/master/SSM.png)
 
@@ -140,13 +172,12 @@ def handler(event, context):
     send_tweet(text)
 
 def make_tweet():
-    return "#BlackLivesMatter https://blacklivesmatters.carrd.co/"
+    return "I've completed my Quest!\n\nI built this Lambda Bot using @AWSOwen's course!"
+
 
 def send_tweet(text):
     print(text)
-    filename='BlackSquare.jpg'
-    api.update_with_media(filename,status=text)
-
+    api.update_status(text)
 ```
 
 ## Deployment
