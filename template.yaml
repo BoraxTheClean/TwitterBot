@@ -13,6 +13,7 @@ Resources:
 
     SimpleTwitterApp:
         Type: AWS::Serverless::Function
+        Condition: False
         Properties:
             FunctionName: twitter-bot
             CodeUri: dist/
